@@ -1,13 +1,15 @@
 {
   "name": "derelicte",
   "version": "0.1.0",
-  "description": "An altJS lang built entirely with Sweet.js macros",
+  "description": "An AltJS lang built entirely with Sweet.js macros",
   "main": "compiler.js",
-  "bin": "./bin/drl",
+  "bin": {
+    "drl": "./bin/drl"
+  },
   "scripts": {
     "test": "grunt test"
   },
-  "repository": "",
+  "repository": "https://github.com/natefaubion/derelicte.git",
   "keywords": [
     "sweet-macros"
   ],
