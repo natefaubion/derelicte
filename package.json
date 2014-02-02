@@ -1,0 +1,24 @@
+{
+  "name": "derelicte",
+  "version": "0.1.0",
+  "description": "An altJS lang built entirely with Sweet.js macros",
+  "main": "compiler.js",
+  "bin": "./bin/drl",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": "",
+  "keywords": [
+    "sweet-macros"
+  ],
+  "author": "Nathan Faubion <nathan@n-son.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-sweet.js": "~0.1.4"
+  },
+  "dependencies": {
+    "sweet.js": "~0.4.1",
+    "resolve": "~0.6.1"
+  }
+}

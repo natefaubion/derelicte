@@ -1,0 +1,28 @@
+mod prelude {
+  pub def id x { x }
+  pub def always x y { x }
+  pub def flip f (x, y) { f(y, x) }
+
+  pub def arity1 f a { f(a) }
+  pub def arity2 f (a, b) { f(a, b) }
+  pub def arity3 f (a, b, c) { f(a, b, c) }
+
+  pub def curry f a b { f(a, b) }
+  pub def curry3 f a b c { f(a, b, c) }
+  pub def curry4 f a b c d { f(a, b, c, d) }
+
+  pub def uncurry f (a, b) { f(a)(b) }
+  pub def uncurry3 f (a, b, c) { f(a)(b)(c) }
+  pub def uncurry4 f (a, b, c, d) { f(a)(b)(c)(d) }
+
+  pub def get k o { o[k] }
+  pub def map f xs { xs.map(arity1(f)) }
+  pub def filter f xs { xs.filter(arity1(f)) }
+  pub def reduce f xs acc { xs.reduce(arity2(f), acc) }
+  pub def reduceRight f xs acc { xs.reduceRight(arity2(f), acc) }
+  pub fold = reduce
+  pub foldr = reduceRight
+
+  use console
+  pub println = console.log
+}

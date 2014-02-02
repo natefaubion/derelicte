@@ -1,0 +1,97 @@
+#!/usr/bin/env node
+
+var vm = require('vm');
+var fs = require('fs');
+var path = require('path');
+var resolve = require('resolve');
+var derelicte = require('../compiler.js');
+var showjs = false;
+var cwd = process.cwd();
+
+if (process.argv[2] === '--js') {
+  showjs = 2;
+  process.argv.splice(2, 1);
+}
+
+var mainName = process.argv[2];
+var drlContext = makeContext();
+var vmContext = vm.createContext(drlContext);
+vmContext.global = vmContext;
+
+if (showjs) {
+  var src = fs.readFileSync(mainName, 'utf8');
+  var compiled = derelicte.compile(src);
+  console.log(compiled);
+} else {
+  loadStd();
+  var main = drlContext.__mods.get(mainName);
+  if (!main.main) {
+    throw new Error('No `main` function found');
+  } else {
+    main.main(process.argv.slice(3));
+  }
+}
+
+function DrlLoader() {
+  var modules = {};
+  
+  return {
+    get: get,
+    set: set
+  };
+
+  function get(str) {
+    var mod = modules['$' + str];
+    if (mod) return mod();
+    load(str);
+    if (!modules['$' + str]) {
+      throw new Error('Module not found: ' + str);
+    }
+    return get(str);
+  }
+
+  function set(str, pubs) {
+    return modules['$' + str] = pubs;
+  }
+
+  function load(str) {
+    var parts = str.split('.');
+    var source = [
+      path.join(cwd, parts.join(path.sep) + '.drl'),
+      path.join(cwd, parts.concat(parts[parts.length - 1]).join(path.sep) + '.drl')
+    ].reduce(function(acc, l) {
+      try {
+        return acc || fs.readFileSync(l, 'utf8');
+      } catch (e) {
+        return null;
+      }
+    }, null);
+
+    if (source == null) {
+      throw new Error('Module not found: ' + str);
+    }
+
+    var compiled = derelicte.compile(source);
+    vm.runInContext(compiled, vmContext, str);
+  }
+}
+
+function loadStd() {
+  var fileName = path.join(__dirname, '../std.js');
+  var contents = fs.readFileSync(fileName, 'utf8');
+  vm.runInContext(contents, vmContext, 'std');
+  drlContext.__mods.get('prelude');
+}
+
+function makeContext() {
+  return {
+    __mods: DrlLoader(),
+    __host: {
+      console: console,
+      process: process,
+      fs: fs,
+      http: require('http'),
+      https: require('https')
+    }
+  };
+}

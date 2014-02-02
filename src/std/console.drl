@@ -1,0 +1,5 @@
+mod console {
+  console = __host.console
+  pub log = console.log.bind(console)
+  pub err = console.error.bind(console)
+}
